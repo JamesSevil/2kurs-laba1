@@ -293,40 +293,104 @@ struct DoublyLinkedList {
     }
 };
 
+template <typename T>
+struct Stack {
+    T* data;        // Указатель на массив данных
+    int top;        // Индекс верхнего элемента
+    int capacity;   // Вместимость стека
+
+    Stack(int size) : capacity(size), top(-1) { // конструктор
+        data = new T[capacity];
+    }
+
+    ~Stack() { // деструктор
+        delete[] data; 
+    }
+
+    void push(T value) { // ф-ия добавления элемента
+        if (top == capacity - 1) {
+            throw overflow_error("Стек переполнен"); // Проверка на переполнение
+        }
+        data[++top] = value; // Увеличение индекса и добавление элемента
+    }
+
+    T pop() { // ф-ия удаления элемента и возврат значения
+        if (top == -1) {
+            throw underflow_error("Стек пуст"); // Проверка на пустоту
+        }
+        return data[top--]; // Возврат верхнего элемента и уменьшение индекса
+    }
+
+    void peek() { // ф-ия вывода вершины стэка
+        if (top == -1) {
+            throw underflow_error("Стек пуст"); // Проверка на пустоту
+        }
+        cout << data[top] << endl; // вывод верхнего элемента без его удаления
+    }
+
+    bool isEmpty() { // ф-ия проверки стэка на пустоту
+        return top == -1;
+    }
+
+    int size() { // ф-ия размера стэка
+        return top + 1;
+    }
+};
+
+template <typename T>
+struct Queue {
+    T* data;        // Указатель на массив данных
+    int front;      // Индекс первого элемента
+    int rear;       // Индекс последнего элемента
+    int capacity;   // Вместимость очереди
+    int size;       // Текущий размер очереди
+
+    Queue(int cap) : capacity(cap), front(0), rear(-1), size(0) { // конструктор
+        data = new T[capacity];
+    }
+
+    ~Queue() { // деструктор
+        delete[] data;
+    }
+
+    void push(T value) { // ф-ия добавления элемента в конец очереди
+        if (size == capacity) {
+            throw overflow_error("Очередь переполнена"); // Проверка на переполнение
+        }
+        rear = (rear + 1) % capacity; // Циклическое увеличение индекса
+        data[rear] = value; // Добавление элемента
+        size++; // Увеличение размера очереди
+    }
+
+    T pop() { // ф-ия удаления элемента с начала очереди и его возврат
+        if (size == 0) {
+            throw underflow_error("Очередь пуста"); // Проверка на пустоту
+        }
+        T value = data[front]; // Сохранение значения для возврата
+        front = (front + 1) % capacity; // Циклическое увеличение индекса
+        size--; // Уменьшение размера очереди
+        return value; // Возврат удаленного элемента
+    }
+
+    T peek() { // ф-ия вывода элемента в начале очереди
+        if (size == 0) {
+            throw underflow_error("Очередь пуста"); // Проверка на пустоту
+        }
+        cout << data[front] << endl;
+    }
+
+    bool isEmpty() { // ф-ия проверки очереди на пустоту
+        return size == 0;
+    }
+
+    int getSize() { // ф-ия получения размера очереди
+        return size;
+    }
+};
 
 int main() {
 
-    // Массив
-    cout << "Массив:" << endl;
-    MyArray<int> arr;
-    arr.add(10);
-    arr.add(20);
-    arr.add(30);
-    arr.print();
-    arr.remove(0);
-    arr.print();
-    arr.addAt(1, 15);
-    arr.print();
-    arr.replace(0, 1);
-    arr.print();
-    cout << "Элемент по индексу 2: " << arr.get(2) << endl;
-    cout << "Размер массива: " << arr.length() << endl;
-    cout << endl;
-
-    //Список
-    DoublyLinkedList<int> nums;
-    nums.push_back(5);
-    nums.push_back(4);
-    nums.push_back(10);
-    nums.push_front(2);
-    nums.print();
-    nums.pop_back();
-    nums.pop_front();
-    nums.remove(4);
-    nums.print();
-    cout << "Find 5: " << (nums.find(5) ? "Yes" : "No") << endl;
-    
-
+    Queue<int> nums(5);
 
     return 0;
 }
