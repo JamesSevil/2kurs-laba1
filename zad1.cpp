@@ -84,6 +84,107 @@ struct MyArray {
     }
 };
 
+template<typename T>
+struct Node {
+    int data;
+    Node* next;
+
+    Node(int value) : data(value), next(nullptr) {} // конструктор узла
+};
+template<typename T>
+struct LinkedList {
+    Node<T>* head;
+
+    LinkedList() : head(nullptr) {} // конструктор листа
+
+    void print() { // ф-ия вывода списка
+        Node<T>* current = head;
+        while (current) {
+            cout << current->data << " ";
+            current = current->next;
+        }
+        cout << endl;
+    }
+
+    void push_front(T value) { // ф-ия добавления элемента в начало
+        Node<T>* newNode = new Node<T>(value);
+        newNode->next = head;
+        head = newNode;
+    }
+
+    void push_back(T value) { // ф-ия добавления элемента в конец
+        Node<T>* newNode = new Node<T>(value);
+        if (head == nullptr) {
+            head = newNode;
+        } else {
+            Node<T>* current = head;
+            while (current->next) {
+                current = current->next;
+            }
+            current->next = newNode;
+        }
+    }
+
+    void pop_front() { // ф-ия удаления элемента с начала
+        if (head == nullptr) return;
+        Node<T>* temp = head;
+        head = head->next;
+        delete temp;
+    }
+
+    void pop_back() { // ф-ия удаления элемента с конца
+        if (head == nullptr) return;
+        if (!head->next) { // если только 1 элемент
+            delete head;
+            head = nullptr;
+            return;
+        }
+        Node<T>* current = head;
+        while (current->next && current->next->next) {
+            current = current->next;
+        }
+        delete current->next; // Удаляем последний элемент
+        current->next = nullptr; // Обнуляем указатель
+    }
+
+    void remove(T value) { // ф-ия удаления элемента по значению
+        if (head == nullptr) return;
+        if (head->data == value) {
+            pop_front();
+            return;
+        }
+        Node<T>* current = head;
+        while (current->next) {
+            if (current->next->data == value) {
+                Node<T>* temp = current->next;
+                current->next = current->next->next;
+                delete temp;
+                return;
+            }
+            current = current->next;
+        }
+    }
+
+    bool find(T value) { // ф-ия нахождения элемента по значению
+        Node<T>* current = head;
+        while (current) {
+            if (current->data == value) {
+                return true; // Элемент найден
+            }
+            current = current->next;
+        }
+        return false; // Элемент не найден
+    }
+
+    ~LinkedList() { // деструктор
+        while (head) {
+            pop_front();
+        }
+    }
+    
+};
+
+
 
 int main() {
 
@@ -104,6 +205,17 @@ int main() {
     cout << "Размер массива: " << arr.length() << endl;
 
     //Список
+    LinkedList<int> nums;
+    nums.push_back(5);
+    nums.push_back(4);
+    nums.push_back(10);
+    nums.push_front(2);
+    nums.print();
+    nums.pop_back();
+    nums.pop_front();
+    nums.remove(4);
+    nums.print();
+    cout << "Find 5: " << (nums.find(5) ? "Yes" : "No") << endl;
     
 
 
