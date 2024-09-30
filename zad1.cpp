@@ -84,18 +84,18 @@ struct MyArray {
     }
 };
 
-template<typename T>
+/*template<typename T>
 struct Node {
-    int data;
+    T data;
     Node* next;
 
-    Node(int value) : data(value), next(nullptr) {} // конструктор узла
+    Node(T value) : data(value), next(nullptr) {} // конструктор узла
 };
 template<typename T>
-struct LinkedList {
+struct SinglyLinkedList {
     Node<T>* head;
 
-    LinkedList() : head(nullptr) {} // конструктор листа
+    SinglyLinkedList() : head(nullptr) {} // конструктор листа
 
     void print() { // ф-ия вывода списка
         Node<T>* current = head;
@@ -176,14 +176,122 @@ struct LinkedList {
         return false; // Элемент не найден
     }
 
-    ~LinkedList() { // деструктор
+    ~SinglyLinkedList() { // деструктор
         while (head) {
             pop_front();
         }
     }
     
-};
+};*/
 
+template <typename T>
+struct Node {
+    T data;
+    Node* next;
+    Node* prev;
+
+    Node(T value) : data(value), next(nullptr), prev(nullptr) {} // конструктор узла
+};
+template <typename T>
+struct DoublyLinkedList {
+    Node<T>* head;
+    Node<T>* tail;
+
+    DoublyLinkedList() : head(nullptr), tail(nullptr) {} // конструктор листа
+
+    void print() { // ф-ия вывода списка
+        Node<T>* current = head;
+        while (current) {
+            cout << current->data << " ";
+            current = current->next;
+        }
+        cout << endl;
+    }
+
+    void push_front(T value) { // ф-ия добавления элемента в начало
+        Node<T>* newNode = new Node<T>(value);
+        if (head == nullptr) {
+            head = tail = newNode;
+        } else {
+            newNode->next = head;
+            head->prev = newNode;
+            head = newNode;
+        }
+    }
+
+    void push_back(T value) { // ф-ия добавления элемента в конец
+        Node<T>* newNode = new Node<T>(value);
+        if (tail == nullptr) {
+            head = tail = newNode;
+        } else {
+            newNode->prev = tail;
+            tail->next = newNode;
+            tail = newNode;
+        }
+    }
+
+    void pop_front() { // ф-ия удаления элемента в начале
+        if (head == nullptr) return;
+        Node<T>* temp = head;
+        head = head->next;
+        if (head != nullptr) {
+            head->prev = nullptr;
+        } else {
+            tail = nullptr; // Список стал пустым
+        }
+        delete temp;
+    }
+
+    void pop_back() { // ф-ия удаления элемента в конце
+        if (tail == nullptr) return; // Список пуст
+        Node<T>* temp = tail;
+        tail = tail->prev;
+        if (tail != nullptr) {
+            tail->next = nullptr;
+        } else {
+            head = nullptr; // Список стал пустым
+        }
+        delete temp;
+    }
+
+    void remove(T value) { // ф-ия удаления элемента по значению
+        Node<T>* current = head;
+        while (current) {
+            if (current->data == value) {
+                if (current->prev) {
+                    current->prev->next = current->next;
+                } else {
+                    head = current->next; // Удаляем голову
+                }
+                if (current->next) {
+                    current->next->prev = current->prev;
+                } else {
+                    tail = current->prev; // Удаляем хвост
+                }
+                delete current;
+                return; // Выход после удаления первого найденного элемента
+            }
+            current = current->next;
+        }
+    }
+
+    bool find(T value) { // ф-ия поиска элемента по значению
+        Node<T>* current = head;
+        while (current) {
+            if (current->data == value) {
+                return true; // Элемент найден
+            }
+            current = current->next;
+        }
+        return false; // Элемент не найден
+    }
+
+    ~DoublyLinkedList() { // деструктор списка
+        while (head) {
+            pop_front();
+        }
+    }
+};
 
 
 int main() {
@@ -203,9 +311,10 @@ int main() {
     arr.print();
     cout << "Элемент по индексу 2: " << arr.get(2) << endl;
     cout << "Размер массива: " << arr.length() << endl;
+    cout << endl;
 
     //Список
-    LinkedList<int> nums;
+    DoublyLinkedList<int> nums;
     nums.push_back(5);
     nums.push_back(4);
     nums.push_back(10);
