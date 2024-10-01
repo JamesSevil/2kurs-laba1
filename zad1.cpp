@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -388,9 +389,116 @@ struct Queue {
     }
 };
 
+const int TABLE_SIZE = 10; // Размер таблицы
+template<typename T>
+struct KeyValuePair {
+    string key;
+    T value;
+    KeyValuePair* next; // Указатель на следующий элемент (для цепочек)
+};
+template<typename T>
+struct HashTable {
+    KeyValuePair<T>* table[TABLE_SIZE]; // Массив указателей на элементы
+
+    HashTable() { // Инициализация массива указателей
+        for (int i = 0; i < TABLE_SIZE; ++i) {
+            table[i] = nullptr;
+        }
+    }
+
+    int hashFunction(const string& key) { // Хеш-функция
+        hash<string> hashFn;
+        return hashFn(key) % TABLE_SIZE;
+    }
+
+    void insert(const string& key, T value) { // ф-ия добавления элемента
+        int index = hashFunction(key);
+        KeyValuePair<T>* newPair = new KeyValuePair<T>{key, value, nullptr};
+
+        if (!table[index]) {
+            table[index] = newPair; // Если ячейка пустая, добавляем новый элемент
+        } else {
+            KeyValuePair<T>* current = table[index];
+            while (current->next) {
+                if (current->key == key) {
+                    current->value = value; // Обновляем значение, если ключ существует
+                    delete newPair; // Удаляем временный элемент
+                    return;
+                }
+                current = current->next;
+            }
+            current->next = newPair; // Добавляем новый элемент в конец цепочки
+        }
+    }
+
+    bool get(const string& key, T& value) { // ф-ия получения элемента по ключу
+        int index = hashFunction(key);
+        KeyValuePair<T>* current = table[index];
+        while (current) {
+            if (current->key == key) {
+                value = current->value; // Возвращаем значение
+                return true; // Успешное получение
+            }
+            current = current->next;
+        }
+        return false; // Ключ не найден
+    }
+
+    bool remove(const string& key) { // ф-ия удаления элемента по ключу
+        int index = hashFunction(key);
+        KeyValuePair<T>* current = table[index];
+        KeyValuePair<T>* previous = nullptr;
+
+        while (current) {
+            if (current->key == key) {
+                if (previous) {
+                    previous->next = current->next; // Удаляем элемент из цепочки
+                } else {
+                    table[index] = current->next; // Если это первый элемент в цепочке
+                }
+                delete current; // Освобождаем память
+                return true; // Успешное удаление
+            }
+            previous = current;
+            current = current->next;
+        }
+        return false; // Ключ не найден
+    }
+
+    ~HashTable() { // деструктор
+        for (int i = 0; i < TABLE_SIZE; ++i) {
+            KeyValuePair<T>* current = table[i];
+            while (current) {
+                KeyValuePair<T>* toDelete = current;
+                current = current->next;
+                delete toDelete;
+            }
+        }
+    }
+};
+
+
+
 int main() {
 
-    Queue<int> nums(5);
+
+    HashTable<int> map;
+    map.insert("BMW", 5);
+    
+    int value;
+    if (map.get("BMW", value)) {
+        cout << value << endl;
+    } else {
+        cout << "Не найдено" << endl;
+    }
+
+    map.remove("BMW");
+
+    if (map.get("BMW", value)) {
+        cout << value << endl;
+    } else {
+        cout << "Не найдено" << endl;
+    }
 
     return 0;
 }
