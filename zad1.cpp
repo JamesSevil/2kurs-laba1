@@ -1,5 +1,6 @@
 #include <iostream>
 #include <sstream>
+#include <iomanip>
 
 using namespace std;
 
@@ -85,7 +86,7 @@ struct MyArray {
     }
 };
 
-/*template<typename T>
+template<typename T>
 struct Node {
     T data;
     Node* next;
@@ -183,25 +184,25 @@ struct SinglyLinkedList {
         }
     }
     
-};*/
+};
 
 template <typename T>
-struct Node {
+struct Node2 {
     T data;
-    Node* next;
-    Node* prev;
+    Node2* next;
+    Node2* prev;
 
-    Node(T value) : data(value), next(nullptr), prev(nullptr) {} // конструктор узла
+    Node2(T value) : data(value), next(nullptr), prev(nullptr) {} // конструктор узла
 };
 template <typename T>
 struct DoublyLinkedList {
-    Node<T>* head;
-    Node<T>* tail;
+    Node2<T>* head;
+    Node2<T>* tail;
 
     DoublyLinkedList() : head(nullptr), tail(nullptr) {} // конструктор листа
 
     void print() { // ф-ия вывода списка
-        Node<T>* current = head;
+        Node2<T>* current = head;
         while (current) {
             cout << current->data << " ";
             current = current->next;
@@ -210,7 +211,7 @@ struct DoublyLinkedList {
     }
 
     void push_front(T value) { // ф-ия добавления элемента в начало
-        Node<T>* newNode = new Node<T>(value);
+        Node2<T>* newNode = new Node<T>(value);
         if (head == nullptr) {
             head = tail = newNode;
         } else {
@@ -221,7 +222,7 @@ struct DoublyLinkedList {
     }
 
     void push_back(T value) { // ф-ия добавления элемента в конец
-        Node<T>* newNode = new Node<T>(value);
+        Node2<T>* newNode = new Node<T>(value);
         if (tail == nullptr) {
             head = tail = newNode;
         } else {
@@ -233,7 +234,7 @@ struct DoublyLinkedList {
 
     void pop_front() { // ф-ия удаления элемента в начале
         if (head == nullptr) return;
-        Node<T>* temp = head;
+        Node2<T>* temp = head;
         head = head->next;
         if (head != nullptr) {
             head->prev = nullptr;
@@ -245,7 +246,7 @@ struct DoublyLinkedList {
 
     void pop_back() { // ф-ия удаления элемента в конце
         if (tail == nullptr) return; // Список пуст
-        Node<T>* temp = tail;
+        Node2<T>* temp = tail;
         tail = tail->prev;
         if (tail != nullptr) {
             tail->next = nullptr;
@@ -256,7 +257,7 @@ struct DoublyLinkedList {
     }
 
     void remove(T value) { // ф-ия удаления элемента по значению
-        Node<T>* current = head;
+        Node2<T>* current = head;
         while (current) {
             if (current->data == value) {
                 if (current->prev) {
@@ -277,7 +278,7 @@ struct DoublyLinkedList {
     }
 
     bool find(T value) { // ф-ия поиска элемента по значению
-        Node<T>* current = head;
+        Node2<T>* current = head;
         while (current) {
             if (current->data == value) {
                 return true; // Элемент найден
@@ -477,28 +478,102 @@ struct HashTable {
     }
 };
 
+struct NodeT {
+    int data;
+    NodeT* left;
+    NodeT* right;
 
+    NodeT(int value) : data(value), left(nullptr), right(nullptr) {}
+};
+struct CompleteBinaryTree {
+    NodeT* root;
+    int size;
+
+    CompleteBinaryTree() : root(nullptr), size(0) {}
+
+    void insert(int value) { // ф-ия добавления элемента
+        NodeT* newNode = new NodeT(value);
+        if (root == nullptr) {
+            root = newNode;
+        } else {
+            // Используем массив для хранения узлов для упрощения вставки
+            NodeT** nodes = new NodeT*[size + 1];
+            fillArray(nodes, root);
+            nodes[size] = newNode;
+
+            // Вставка в полный бинарный дерево
+            for (int i = 0; i < size; ++i) {
+                if (nodes[i] != nullptr) {
+                    if (nodes[i]->left == nullptr) {
+                        nodes[i]->left = newNode;
+                        break;
+                    } else if (nodes[i]->right == nullptr) {
+                        nodes[i]->right = newNode;
+                        break;
+                    }
+                }
+            }
+
+            delete[] nodes;
+        }
+        size++;
+    }
+
+    bool search(NodeT* node, int value) { // ф-ия поиска элемента
+        if (node == nullptr) return false;
+        if (node->data == value) return true;
+        return search(node->left, value) || search(node->right, value);
+    }
+
+    bool isComplete(NodeT* node, int index, int totalNodes) { // проверка на complete
+        if (node == nullptr) return true;
+        if (index >= totalNodes) return false;
+        return isComplete(node->left, 2 * index + 1, totalNodes) &&
+               isComplete(node->right, 2 * index + 2, totalNodes);
+    }
+
+    void fillArray(NodeT** arr, NodeT* node, int index = 0) { // Заполнение массива узлов
+        if (node == nullptr) return;
+        arr[index] = node;
+        fillArray(arr, node->left, 2 * index + 1);
+        fillArray(arr, node->right, 2 * index + 2);
+    }
+
+    void printTree(NodeT* node, int depth = 0) { // функция вывода дерева на экран
+        if (node == nullptr) return;
+
+        // Сначала выводим правое поддерево
+        printTree(node->right, depth + 1);
+
+        // Затем выводим текущий узел
+        std::cout << setw(4 * depth) << " " << node->data << endl;
+
+        // Затем выводим левое поддерево
+        printTree(node->left, depth + 1);
+    }
+
+    void clear(NodeT* node) { // освобождение памяти
+        if (node == nullptr) return;
+        clear(node->left);
+        clear(node->right);
+        delete node;
+    }
+
+    ~CompleteBinaryTree() {
+        clear(root);
+    }
+};
 
 int main() {
 
+    CompleteBinaryTree tree;
 
-    HashTable<int> map;
-    map.insert("BMW", 5);
-    
-    int value;
-    if (map.get("BMW", value)) {
-        cout << value << endl;
-    } else {
-        cout << "Не найдено" << endl;
-    }
-
-    map.remove("BMW");
-
-    if (map.get("BMW", value)) {
-        cout << value << endl;
-    } else {
-        cout << "Не найдено" << endl;
-    }
+    tree.insert(5);
+    tree.insert(20);
+    tree.insert(1);
+    tree.insert(4);
+    tree.insert(2);
+    tree.printTree(tree.root);
 
     return 0;
 }
