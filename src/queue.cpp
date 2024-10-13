@@ -21,22 +21,20 @@ void Queue<T>::push(T value) {
 }
 
 template<typename T>
-T Queue<T>::pop() {
+void Queue<T>::pop() {
     if (size == 0) {
         throw underflow_error("Очередь пуста"); // Проверка на пустоту
     }
-    T value = data[front]; // Сохранение значения для возврата
     front = (front + 1) % capacity; // Циклическое увеличение индекса
     size--; // Уменьшение размера очереди
-    return value; // Возврат удаленного элемента
 }
 
 template<typename T>
-void Queue<T>::peek() {
+T Queue<T>::peek() {
     if (size == 0) {
         throw underflow_error("Очередь пуста"); // Проверка на пустоту
     }
-    cout << data[front] << endl;
+    return data[front];
 }
 
 template<typename T>
@@ -45,6 +43,6 @@ bool Queue<T>::isEmpty() {
 }
 
 template<typename T>
-int Queue<T>::getSize() {
+int Queue<T>::Size() {
     return size;
 }

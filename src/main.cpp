@@ -413,6 +413,7 @@ void SPRINT (string& name, string& filename) {
         cout << endl;
     } else {
         cout << "Нет такого стэка или он пуст!" << endl;
+        exit(1);
     } 
 }
 void Sprocessing(string& command, string& filename) { // ф-ия обработки команд стека
@@ -430,6 +431,101 @@ void Sprocessing(string& command, string& filename) { // ф-ия обработ�
         stringstream stream(command.substr(7));
         stream >> name;
         SPRINT(name, filename);
+    } else {
+        cout << "Ошибка, нет такой команды!" << endl;
+        exit(1); 
+    }
+}
+
+// Очередь
+void Qreadfile(string& filename, string& name, Queue<string>& nums) { // ф-ия чтения очереди из файла
+    string str;
+    ifstream fileinput;
+    fileinput.open(filename);
+    while (getline(fileinput, str)) {
+        stringstream ss(str);
+        string token;
+        getline(ss, token, ' ');
+        if (token == name) {
+            while (getline(ss, token, ' ')) {
+                nums.push(token);
+            }
+        }
+    }
+    fileinput.close();
+}
+void QPUSH(string& name, string& value, string& filename) {
+    string textfull = Fulltext(filename, name);
+    Queue<string> nums(30);
+    Qreadfile(filename, name, nums);
+    
+    string str;
+    if (nums.Size() != 0) {
+        nums.push(value);
+        str = name + ' ';
+        while(nums.Size() != 0) {
+            str += nums.peek() + ' ';
+            nums.pop();
+        }
+        textfull += str;
+        writefile(filename, textfull);
+    } else {
+        str = name + ' ' + value;
+        textfull += str;
+        writefile(filename, textfull);
+    }
+}
+void QPOP(string& name, string& filename) {
+    string textfull = Fulltext(filename, name);
+    Queue<string> nums(30);
+    Qreadfile(filename, name, nums);
+
+    string str;
+    if (nums.Size() != 0) {
+        nums.pop();
+        str = name + ' ';
+        while(nums.Size() != 0) {
+            str += nums.peek() + ' ';
+            nums.pop();
+        }
+        textfull += str;
+        writefile(filename, textfull);
+    } else {
+        cout << "Ошибка, нет такой очереди или она пуста!" << endl;
+        exit(1);
+    }
+}
+void QPRINT (string& name, string& filename) {
+    Queue<string> nums(30);
+    Qreadfile(filename, name, nums);
+
+    string str;
+    if (nums.Size() != 0) {
+        while (nums.Size() != 0) {
+            cout << nums.peek() << " ";
+            nums.pop();
+        }
+        cout << endl;
+    } else {
+        cout << "Нет такого стэка или он пуст!" << endl;
+        exit(1);
+    } 
+}
+void Qprocessing(string& command, string& filename) { // ф-ия обработки команд очереди
+    string name, value;
+
+    if (command.substr(0, 6) == "QPUSH ") {
+        stringstream stream(command.substr(6));
+        stream >> name >> value;
+        QPUSH(name, value, filename);
+    } else if (command.substr(0, 5) == "QPOP ") {
+        stringstream stream(command.substr(5));
+        stream >> name;
+        QPOP(name, filename);
+    } else if (command.substr(0, 7) == "QPRINT ") {
+        stringstream stream(command.substr(7));
+        stream >> name;
+        QPRINT(name, filename);
     } else {
         cout << "Ошибка, нет такой команды!" << endl;
         exit(1); 
@@ -463,6 +559,8 @@ int main(int argc, char* argv[]) {
         Lprocessing(query, filename);
     } else if (query.substr(0, 1) == "S") { // Стек
         Sprocessing(query, filename);
+    } else if (query.substr(0, 1) == "Q") {
+        Qprocessing(query, filename);
     } else {
         cout << "Ошибка, неизвестная принадлежность структуры данных!" << endl;
         return 1;
