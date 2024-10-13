@@ -6,6 +6,7 @@
 #include "../include/hashtable.h"
 #include "../include/tree.h"
 
+// Вспомогательные ф-ии
 string Fulltext (string& filename, string& nameStruct) { // ф-ия сохранения фулл текста файла без нужной структуры
     string str, textfull;
     ifstream fileinput;
@@ -28,7 +29,8 @@ void writefile (string& filename, string& textfull) { // ф-ия записи д
     fileoutput.close();
 }
 
-Array<string> Mreadfile (string& filename, string& arrayName) {
+// Массив
+Array<string> Mreadfile (string& filename, string& name) { // ф-ия чтения массива из файла
     Array<string> nums;
     string str;
     ifstream fileinput;
@@ -37,7 +39,7 @@ Array<string> Mreadfile (string& filename, string& arrayName) {
         stringstream ss(str);
         string token;
         getline(ss, token, ' ');
-        if (token == arrayName) {
+        if (token == name) {
             while (getline(ss, token, ' ')) {
                 nums.add(token);
             }
@@ -46,40 +48,40 @@ Array<string> Mreadfile (string& filename, string& arrayName) {
     fileinput.close();
     return nums;
 }
-void MADD(string& arrayName, string& value, string& filename) {
-    string textfull = Fulltext(filename, arrayName); // весь файл
-    Array<string> nums = Mreadfile(filename, arrayName);
+void MADD(string& name, string& value, string& filename) {
+    string textfull = Fulltext(filename, name);
+    Array<string> nums = Mreadfile(filename, name);
 
     string str;
     if (nums.length() != 0) {
         nums.add(value);
-        str = arrayName + ' ';
+        str = name + ' ';
         for (int i = 0; i < nums.length(); ++i) {
             str += nums.get(i) + ' ';
         }
         textfull += str;
         writefile(filename, textfull);
     } else { // создание массива, если его нет
-        str = arrayName + ' ' + value;
+        str = name + ' ' + value;
         textfull += str;
         writefile(filename, textfull);
     }
 }
-void MADDAT(string& arrayName, string& value, int& index, string& filename) {
-    string textfull = Fulltext(filename, arrayName);
-    Array<string> nums = Mreadfile(filename, arrayName);
+void MADDAT(string& name, string& value, int& index, string& filename) {
+    string textfull = Fulltext(filename, name);
+    Array<string> nums = Mreadfile(filename, name);
 
     string str;
     if (nums.length() != 0 && index < nums.length()) {
         nums.addAt(index, value);
-        str = arrayName + ' ';
+        str = name + ' ';
         for (int i = 0; i < nums.length(); ++i) {
             str += nums.get(i) + ' ';
         }
         textfull += str;
         writefile(filename, textfull);
     } else if (nums.length() == 0 && index == 0){ // создание массива, если его нет
-        str = arrayName + ' ' + value;
+        str = name + ' ' + value;
         textfull += str;
         writefile(filename, textfull);
     } else {
@@ -87,14 +89,14 @@ void MADDAT(string& arrayName, string& value, int& index, string& filename) {
         exit(1);
     }
 }
-void MREMOVE (string& arrayName, int& index, string& filename) {
-    string textfull = Fulltext(filename, arrayName);
-    Array<string> nums = Mreadfile(filename, arrayName);
+void MREMOVE (string& name, int& index, string& filename) {
+    string textfull = Fulltext(filename, name);
+    Array<string> nums = Mreadfile(filename, name);
 
     string str;
     if (nums.length() != 0 && index < nums.length()) {
         nums.remove(index);
-        str = arrayName + ' ';
+        str = name + ' ';
         for (int i = 0; i < nums.length(); ++i) {
             str += nums.get(i) + ' ';
         }
@@ -105,14 +107,14 @@ void MREMOVE (string& arrayName, int& index, string& filename) {
         exit(1);
     }
 }
-void MREPLACE (string& arrayName, string& value, int& index, string& filename) {
-    string textfull = Fulltext(filename, arrayName); // весь файл
-    Array<string> nums = Mreadfile(filename, arrayName);
+void MREPLACE (string& name, string& value, int& index, string& filename) {
+    string textfull = Fulltext(filename, name); // весь файл
+    Array<string> nums = Mreadfile(filename, name);
 
     string str;
     if (nums.length() != 0 && index < nums.length()) {
         nums.replace(index, value);
-        str = arrayName + ' ';
+        str = name + ' ';
         for (int i = 0; i < nums.length(); ++i) {
             str += nums.get(i) + ' ';
         }
@@ -123,8 +125,8 @@ void MREPLACE (string& arrayName, string& value, int& index, string& filename) {
         exit(1);
     }
 }
-void MGET (string& arrayName, int& index, string& filename) {
-    Array<string> nums = Mreadfile(filename, arrayName);
+void MGET (string& name, int& index, string& filename) {
+    Array<string> nums = Mreadfile(filename, name);
 
     string str;
     if (nums.length() != 0 && index < nums.length()) {
@@ -134,8 +136,8 @@ void MGET (string& arrayName, int& index, string& filename) {
         exit(1);
     }
 }
-void MSIZE(string& arrayName, string& filename) {
-    Array<string> nums = Mreadfile(filename, arrayName);
+void MSIZE(string& name, string& filename) {
+    Array<string> nums = Mreadfile(filename, name);
 
     if (nums.length() != 0) {
         cout << nums.length() << endl;
@@ -144,8 +146,8 @@ void MSIZE(string& arrayName, string& filename) {
         exit(1);
     }
 }
-void MPRINT(string& arrayName, string& filename) {
-    Array<string> nums = Mreadfile(filename, arrayName);
+void MPRINT(string& name, string& filename) {
+    Array<string> nums = Mreadfile(filename, name);
 
     string str;
     if (nums.length() != 0) {
@@ -192,6 +194,150 @@ void Mprocessing(string& command, string& filename) { // ф-ия обработ�
     }
 }
 
+// Список
+SinglyLinkedList<string> Lreadfile(string& filename, string& name) { // ф-ия чтения списка из файла
+    SinglyLinkedList<string> nums;
+    string str;
+    ifstream fileinput;
+    fileinput.open(filename);
+    while (getline(fileinput, str)) { // добавления значения в массив
+        stringstream ss(str);
+        string token;
+        getline(ss, token, ' ');
+        if (token == name) {
+            while (getline(ss, token, ' ')) {
+                nums.push_back(token);
+            }
+        }
+    }
+    fileinput.close();
+    return nums;
+}
+void LPUSH(string& name, string& value, string& filename, string check) {
+    string textfull = Fulltext(filename, name);
+    SinglyLinkedList<string> nums = Lreadfile(filename, name);
+
+    string str;
+    if (nums.size != 0) {
+        if (check == "back") nums.push_back(value);
+        else nums.push_front(value);
+        str = name + ' ';
+        for (int i = 0; i < nums.size; ++i) {
+            str += nums.getvalue(i) + ' ';
+        }
+        textfull += str;
+        writefile(filename, textfull);
+    } else { // создание списка, если его нет
+        str = name + ' ' + value;
+        textfull += str;
+        writefile(filename, textfull);
+    }
+}
+void LPOP(string& name, string& filename, string check) {
+    string textfull = Fulltext(filename, name);
+    SinglyLinkedList<string> nums = Lreadfile(filename, name);
+
+    string str;
+    if (nums.size != 0) {
+        if (check == "back") nums.pop_back();
+        else nums.pop_front();
+        str = name + ' ';
+        for (int i = 0; i < nums.size; ++i) {
+            str += nums.getvalue(i) + ' ';
+        }
+        textfull += str;
+        writefile(filename, textfull);
+    } else {
+        cout << "Ошибка, нет такого списка или он пуст!" << endl;
+        exit(1);
+    }
+}
+void LREMOVE(string& name, string& value, string& filename) {
+    string textfull = Fulltext(filename, name);
+    SinglyLinkedList<string> nums = Lreadfile(filename, name);
+
+    string str;
+    if (nums.size != 0) {
+        if (nums.remove(value)) {
+            str = name + ' ';
+            for (int i = 0; i < nums.size; ++i) {
+                str += nums.getvalue(i) + ' ';
+            }
+            textfull += str;
+            writefile(filename, textfull);
+        } else {
+            cout << "Ошибка, такой элемент в списке не найден!" << endl;
+            exit(1);
+        }
+    } else {
+        cout << "Ошибка, нет такого списка или он пуст!" << endl;
+        exit(1);
+    }
+}
+void LGET(string& name, string& value, string& filename) {
+    SinglyLinkedList<string> nums = Lreadfile(filename, name);
+
+    string str;
+    if (nums.size != 0) {
+        if (nums.getindex(value) == -1) {
+            cout << "Нет такого значения в списке!" << endl;
+            exit(1);
+        }
+        cout << nums.getindex(value) << endl;
+    } else {
+        cout << "Ошибка, нет такого списка!" << endl;
+        exit(1);
+    }
+}
+void LPRINT(string& name, string& filename) {
+    SinglyLinkedList<string> nums = Lreadfile(filename, name);
+
+    string str;
+    if (nums.size != 0) {
+        nums.print();
+    } else {
+        cout << "Ошибка, нет такого списка или он пуст!" << endl;
+        exit(1);
+    }
+}
+void Sprocessing(string& command, string& filename) { // ф-ия обработки команд списка
+    string name, value;
+
+    if (command.substr(0, 7) == "LPUSHB ") {
+        stringstream stream(command.substr(7));;
+        stream >> name >> value;
+        LPUSH(name, value, filename, "back"); 
+    } else if (command.substr(0, 7) == "LPUSHF ") {
+        stringstream stream(command.substr(7));;
+        stream >> name >> value;
+        LPUSH(name, value, filename, "front");
+    } else if (command.substr(0, 6) == "LPOPB ") {
+        stringstream stream(command.substr(6));;
+        stream >> name;
+        LPOP(name, filename, "back");
+    } else if (command.substr(0, 6) == "LPOPF ") {
+        stringstream stream(command.substr(6));;
+        stream >> name;
+        LPOP(name, filename, "front");
+    } else if (command.substr(0, 8) == "LREMOVE ") {
+        stringstream stream(command.substr(8));;
+        stream >> name >> value;
+        LREMOVE(name, value, filename);
+    } else if (command.substr(0, 5) == "LGET ") {
+        stringstream stream(command.substr(5));;
+        stream >> name >> value;
+        LGET(name, value, filename);
+    } else if (command.substr(0, 7) == "LPRINT ") {
+        stringstream stream(command.substr(7));;
+        stream >> name;
+        LPRINT(name, filename);
+    } else {
+        cout << "Ошибка, нет такой команды!" << endl;
+        exit(1); 
+    }
+}
+
+
 int main(int argc, char* argv[]) {
     if (argc != 5) {
         cerr << "Использование: " << argv[0] << " --file <filename> --query '<command>'" << endl;
@@ -214,6 +360,8 @@ int main(int argc, char* argv[]) {
     int value, index;
     if (query.substr(0, 1) == "M") { // Массив
         Mprocessing(query, filename);
+    } else if (query.substr(0, 1) == "L") {
+        Sprocessing(query, filename);
     } else {
         cout << "Ошибка, неизвестная принадлежность структуры данных!" << endl;
         return 1;

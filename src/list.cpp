@@ -66,35 +66,67 @@ void SinglyLinkedList<T>::pop_back() {
 }
 
 template<typename T>
-void SinglyLinkedList<T>::remove(T value) {
-    if (head == nullptr) return;
-    if (head->data == value) {
+bool SinglyLinkedList<T>::remove(T value) {
+    if (!head) return false; // Если список пуст, ничего не удаляем
+    if (head->data == value) { // Если нужно удалить голову списка
         pop_front();
-        return;
+        return true;
     }
     Node<T>* current = head;
-    while (current->next) {
-        if (current->next->data == value) {
-            Node<T>* temp = current->next;
-            current->next = current->next->next;
-            delete temp;
-            return;
+    Node<T>* previous = nullptr;
+    while (current) {
+        if (current->data == value) {
+            previous->next = current->next; // Пропускаем текущий узел
+            delete current; // Освобождаем память
+            size--;
+            return true; // Успешное удаление
         }
+        previous = current;
         current = current->next;
     }
-    size--;
+    return false; // Если элемент не найден
 }
 
 template<typename T>
-bool SinglyLinkedList<T>::find(T value) {
+void SinglyLinkedList<T>::replace(int index, T newValue) {
+    if (index < 0 || index >= size) {
+        cout << "Index out of bounds." << endl;
+        return;
+    }
+
     Node<T>* current = head;
-    while (current) {
-        if (current->data == value) {
-            return true; // Элемент найден
-        }
+    for (int i = 0; i < index; i++) {
         current = current->next;
     }
-    return false; // Элемент не найден
+    current->data = newValue;
+}
+
+template<typename T>
+int SinglyLinkedList<T>::getindex(T value) {
+    Node<T>* current = head;
+    int index = 0;
+    while (current) {
+        if (current->data == value) {
+            return index; // Элемент найден, возвращаем индекс
+        }
+        current = current->next;
+        index++;
+    }
+    return -1; // Если элемент не найден, возвращаем -1
+}
+
+template<typename T>
+T SinglyLinkedList<T>::getvalue(int index) {
+    if (index < 0 || index >= size) {
+        throw out_of_range("Index out of range");
+    }
+
+    Node<T>* current = head;
+    for (int i = 0; i < index; i++) {
+        current = current->next;
+    }
+
+    return current->data;
 }
 
 template<typename T>
