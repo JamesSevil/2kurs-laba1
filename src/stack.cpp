@@ -1,7 +1,7 @@
 #include "../include/stack.h"
 
 template <typename T>
-Stack<T>::Stack(int size) : capacity(size), top(-1) {
+Stack<T>::Stack(int size) : top(-1), capacity(size) {
     data = new T[capacity];
 }
 
@@ -12,31 +12,31 @@ Stack<T>::~Stack() {
 
 template <typename T>
 void Stack<T>::push(T value) {
-    if (top == capacity - 1) {
+    if (top >= capacity - 1) {
         throw overflow_error("Стек переполнен"); // Проверка на переполнение
     }
     data[++top] = value; // Увеличение индекса и добавление элемента
 }
 
 template <typename T>
-T Stack<T>::pop() {
-    if (top == -1) {
+void Stack<T>::pop() {
+    if (top < 0) {
         throw underflow_error("Стек пуст"); // Проверка на пустоту
     }
-    return data[top--]; // Возврат верхнего элемента и уменьшение индекса
+    data[--top]; // Возврат верхнего элемента и уменьшение индекса
 }
 
 template <typename T>
-void Stack<T>::peek() {
+T Stack<T>::peek() {
     if (top == -1) {
         throw underflow_error("Стек пуст"); // Проверка на пустоту
     }
-    cout << data[top] << endl; // вывод верхнего элемента без его удаления
+    return data[top];
 }
 
 template <typename T>
 bool Stack<T>::isEmpty() {
-    return top == -1;
+    return top < 0;
 }
 
 template <typename T>

@@ -300,7 +300,7 @@ void LPRINT(string& name, string& filename) {
         exit(1);
     }
 }
-void Sprocessing(string& command, string& filename) { // ф-ия обработки команд списка
+void Lprocessing(string& command, string& filename) { // ф-ия обработки команд списка
     string name, value;
 
     if (command.substr(0, 7) == "LPUSHB ") {
@@ -337,6 +337,105 @@ void Sprocessing(string& command, string& filename) { // ф-ия обработ�
     }
 }
 
+// Стек
+void Sreadfile(string& filename, string& name, Stack<string>& nums) { // ф-ия чтения стека из файла
+    Stack<string> copy(30);
+    string str;
+    ifstream fileinput;
+    fileinput.open(filename);
+    while (getline(fileinput, str)) {
+        stringstream ss(str);
+        string token;
+        getline(ss, token, ' ');
+        if (token == name) {
+            while (getline(ss, token, ' ')) {
+                copy.push(token);
+            }
+            while (copy.size() != 0) {
+                nums.push(copy.peek());
+                copy.pop();
+            }
+        }
+    }
+    fileinput.close();
+}
+void SPUSH(string& name, string& value, string& filename) {
+    string textfull = Fulltext(filename, name);
+    Stack<string> nums(30);
+    Sreadfile(filename, name, nums);
+    
+    string str;
+    if (nums.size() != 0) {
+        nums.push(value);
+        str = name + ' ';
+        while(nums.size() != 0) {
+            str += nums.peek() + ' ';
+            nums.pop();
+        }
+        textfull += str;
+        writefile(filename, textfull);
+    } else {
+        str = name + ' ' + value;
+        textfull += str;
+        writefile(filename, textfull);
+    }
+}
+void SPOP(string& name, string& filename) {
+    string textfull = Fulltext(filename, name);
+    Stack<string> nums(30);
+    Sreadfile(filename, name, nums);
+
+    string str;
+    if (nums.size() != 0) {
+        nums.pop();
+        str = name + ' ';
+        while(nums.size() != 0) {
+            str += nums.peek() + ' ';
+            nums.pop();
+        }
+        textfull += str;
+        writefile(filename, textfull);
+    } else {
+        cout << "Ошибка, нет такого стека или он пуст!" << endl;
+        exit(1);
+    }
+}
+void SPRINT (string& name, string& filename) {
+    Stack<string> nums(30);
+    Sreadfile(filename, name, nums);
+
+    string str;
+    if (nums.size() != 0) {
+        while (nums.size() != 0) {
+            cout << nums.peek() << " ";
+            nums.pop();
+        }
+        cout << endl;
+    } else {
+        cout << "Нет такого стэка или он пуст!" << endl;
+    } 
+}
+void Sprocessing(string& command, string& filename) { // ф-ия обработки команд стека
+    string name, value;
+
+    if (command.substr(0, 6) == "SPUSH ") {
+        stringstream stream(command.substr(6));
+        stream >> name >> value;
+        SPUSH(name, value, filename);
+    } else if (command.substr(0, 5) == "SPOP ") {
+        stringstream stream(command.substr(5));
+        stream >> name;
+        SPOP(name, filename);
+    } else if (command.substr(0, 7) == "SPRINT ") {
+        stringstream stream(command.substr(7));
+        stream >> name;
+        SPRINT(name, filename);
+    } else {
+        cout << "Ошибка, нет такой команды!" << endl;
+        exit(1); 
+    }
+}
+
 
 int main(int argc, char* argv[]) {
     if (argc != 5) {
@@ -360,7 +459,9 @@ int main(int argc, char* argv[]) {
     int value, index;
     if (query.substr(0, 1) == "M") { // Массив
         Mprocessing(query, filename);
-    } else if (query.substr(0, 1) == "L") {
+    } else if (query.substr(0, 1) == "L") { // Список
+        Lprocessing(query, filename);
+    } else if (query.substr(0, 1) == "S") { // Стек
         Sprocessing(query, filename);
     } else {
         cout << "Ошибка, неизвестная принадлежность структуры данных!" << endl;
