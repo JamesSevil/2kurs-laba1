@@ -638,6 +638,101 @@ void Hprocessing(string& command, string& filename) { // ф-ия обработ�
     }
 }
 
+// Дерево
+CompleteBinaryTree<int> Treadfile(string& filename, string& name) {
+    CompleteBinaryTree<int> nums;
+    string str;
+    ifstream fileinput;
+    fileinput.open(filename);
+    while (getline(fileinput, str)) {
+        stringstream ss(str);
+        string token;
+        getline(ss, token, ' ');
+        if (token == name) {
+            while (getline(ss, token, ' ')) {
+                nums.insert(stoi(token));
+            }
+        }
+    }
+    fileinput.close();
+    return nums;
+}
+void TPUSH(string& name, int& value, string& filename) {
+    string textfull = Fulltext(filename, name);
+    CompleteBinaryTree<int> nums = Treadfile(filename, name);
+    
+    string str;
+    if (nums.size != 0) {
+        nums.insert(value);
+        str = name + ' ' + nums.toString(nums.root);
+        textfull += str;
+        writefile(filename, textfull);
+    } else {
+        str = name + ' ' + to_string(value);
+        textfull += str;
+        writefile(filename, textfull);
+    }
+}
+void TSEARCH(string& name, int& value, string& filename) {
+    CompleteBinaryTree<int> nums = Treadfile(filename, name);
+
+    if (nums.size != 0) {
+        bool check = nums.search(nums.root, value);
+        if (check) cout << "True" << endl;
+        else cout << "false" << endl;
+    } else {
+        cout << "Ошибка, нет такого дерева или оно пусто!" << endl;
+        exit(1);
+    }
+}
+void TCHECK(string& name, string& filename) {
+    CompleteBinaryTree<int> nums = Treadfile(filename, name);
+
+    if (nums.size != 0) {
+        bool check = nums.isComplete(nums.root, 0, nums.size);
+        if (check) cout << "True" << endl;
+        else cout << "false" << endl;
+    } else {
+        cout << "Ошибка, нет такого дерева или оно пусто!" << endl;
+        exit(1);
+    }
+}
+void TPRINT(string& name, string& filename) {
+    CompleteBinaryTree<int> nums = Treadfile(filename, name);
+
+    if (nums.size != 0) {
+        nums.printTree(nums.root);
+    } else {
+        cout << "Ошибка, нет такого дерева или оно пусто!" << endl;
+        exit(1);
+    }
+}
+void Tprocessing(string& command, string& filename) { // ф-ия обработки команд дерева
+    string name;
+    int value;
+
+    if (command.substr(0, 6) == "TPUSH ") {
+        stringstream stream(command.substr(6));
+        stream >> name >> value;
+        TPUSH(name, value, filename);
+    } else if (command.substr(0, 8) == "TSEARCH ") {
+        stringstream stream(command.substr(8));
+        stream >> name >> value;
+        TSEARCH(name, value, filename);
+    } else if (command.substr(0, 7) == "TCHECK ") {
+        stringstream stream(command.substr(7));
+        stream >> name;
+        TSEARCH(name, value, filename);
+    } else if (command.substr(0, 7) == "TPRINT ") {
+        stringstream stream(command.substr(7));
+        stream >> name;
+        TPRINT(name, filename);
+    } else {
+        cout << "Ошибка, нет такой команды!" << endl;
+        exit(1); 
+    }
+}
+
 
 int main(int argc, char* argv[]) {
     if (argc != 5) {
@@ -669,6 +764,8 @@ int main(int argc, char* argv[]) {
         Qprocessing(query, filename);
     } else if (query.substr(0, 1) == "H") {
         Hprocessing(query, filename);
+    } else if (query.substr(0, 1) == "T") {
+        Tprocessing(query, filename);
     } else {
         cout << "Ошибка, неизвестная принадлежность структуры данных!" << endl;
         return 1;

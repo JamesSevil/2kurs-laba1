@@ -59,6 +59,20 @@ void CompleteBinaryTree<T>::fillArray(NodeT<T>** arr, NodeT<T>* node, int index)
 }
 
 template<typename T>
+string CompleteBinaryTree<T>::toString(NodeT<T>* node) { // Функция для получения строки из элементов дерева
+    if (node == nullptr) return "";
+
+    ostringstream oss;
+    oss << node->data << " "; // Добавляем текущий узел
+
+    // Рекурсивно добавляем элементы из левого и правого поддеревьев
+    oss << toString(node->left);
+    oss << toString(node->right);
+
+    return oss.str();
+}
+
+template<typename T>
 void CompleteBinaryTree<T>::printTree(NodeT<T>* node, int depth) {
     if (node == nullptr) return;
 

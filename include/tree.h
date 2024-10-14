@@ -23,6 +23,7 @@ struct CompleteBinaryTree {
     bool search(NodeT<T>* node, T value); // ф-ия поиска элемента
     bool isComplete(NodeT<T>* node, int index, int totalNodes); // проверка на complete
     void fillArray(NodeT<T>** arr, NodeT<T>* node, int index = 0); // Заполнение массива узлов
+    string toString(NodeT<T>* node);
     void printTree(NodeT<T>* node, int depth = 0); // функция вывода дерева на экран
     void clear(NodeT<T>* node);// освобождение памяти
 };
