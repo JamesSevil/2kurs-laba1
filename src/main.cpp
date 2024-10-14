@@ -532,6 +532,112 @@ void Qprocessing(string& command, string& filename) { // ф-ия обработ�
     }
 }
 
+// Хеш-таблица
+template<typename T>
+string printHashTable(const HashTable<T>& ht, string& name) { // Функция для перебора всех элементов хеш-таблицы
+    string str = name + ' ';
+    for (int i = 0; i < TABLE_SIZE; ++i) {
+        KeyValuePair<T>* current = ht.table[i];
+        while (current) {
+            str += current->key + ':' + current->value + ' ';
+            current = current->next;
+        }
+    }
+    return str;
+}
+HashTable<string> Hreadfile(string& filename, string& name) { // ф-ия чтения Хеш-таблицы из файла
+    HashTable<string> nums;
+    string str;
+    ifstream fileinput;
+    fileinput.open(filename);
+    while (getline(fileinput, str)) {
+        stringstream ss(str);
+        string token;
+        getline(ss, token, ' ');
+        if (token == name) {
+            while (getline(ss, token, ' ')) {
+                int position = token.find_first_of(':');
+                token.replace(position, 1, " ");
+                stringstream iss(token);
+                string key, value;
+                iss >> key >> value;
+                nums.insert(key, value);
+            }
+        }
+    }
+    fileinput.close();
+    return nums;
+}
+void HPUSH(string& name, string& key, string& value, string& filename) {
+    string textfull = Fulltext(filename, name);
+    HashTable<string> nums = Hreadfile(filename, name);
+    
+    string str;
+    if (nums.sizetable != 0) {
+        nums.insert(key, value);
+        str = printHashTable(nums, name);
+        textfull += str;
+        writefile(filename, textfull);
+    } else {
+        str = name + ' ' + key + ':' + value;
+        textfull += str;
+        writefile(filename, textfull);
+    }
+}
+void HPOP(string& name, string& key, string& filename) {
+    string textfull = Fulltext(filename, name);
+    HashTable<string> nums = Hreadfile(filename, name);
+
+    string str;
+    if (nums.sizetable != 0) {
+        if (nums.remove(key)) {
+            str = printHashTable(nums, name);
+            textfull += str;
+            writefile(filename, textfull);
+        } else {
+            cout << "Ошибка, нет такого ключа!" << endl;
+            exit(1);
+        }
+    } else {
+        cout << "Ошибка, нет такой таблицы или она пуста!" << endl;
+        exit(1);
+    }
+}
+void HGET(string& name, string& key, string& filename) {
+    HashTable<string> nums = Hreadfile(filename, name);
+
+    string str;
+    if (nums.sizetable != 0) {
+        if (!nums.get(key)) {
+            cout << "Ошибка, нет такого ключа!" << endl;
+            exit(1);
+        }
+    } else {
+        cout << "Ошибка, нет такой таблицы или она пуста!" << endl;
+        exit(1);
+    }
+}
+void Hprocessing(string& command, string& filename) { // ф-ия обработки команд Хеш-таблицы
+    string name, key, value;
+
+    if (command.substr(0, 6) == "HPUSH ") {
+        stringstream stream(command.substr(6));
+        stream >> name >> key >> value;
+        HPUSH(name, key, value, filename);
+    } else if (command.substr(0, 5) == "HPOP ") {
+        stringstream stream(command.substr(5));
+        stream >> name >> key;
+        HPOP(name, key, filename);
+    } else if (command.substr(0, 5) == "HGET ") {
+        stringstream stream(command.substr(5));
+        stream >> name >> key;
+        HGET(name, key, filename);
+    } else {
+        cout << "Ошибка, нет такой команды!" << endl;
+        exit(1); 
+    }
+}
+
 
 int main(int argc, char* argv[]) {
     if (argc != 5) {
@@ -561,6 +667,8 @@ int main(int argc, char* argv[]) {
         Sprocessing(query, filename);
     } else if (query.substr(0, 1) == "Q") {
         Qprocessing(query, filename);
+    } else if (query.substr(0, 1) == "H") {
+        Hprocessing(query, filename);
     } else {
         cout << "Ошибка, неизвестная принадлежность структуры данных!" << endl;
         return 1;
