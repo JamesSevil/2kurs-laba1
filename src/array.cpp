@@ -32,7 +32,7 @@ void Array<T>::add(T value) {
 template<typename T>
 void Array<T>::addAt(size_t index, T value) {
     if (index > size) {
-        throw std::out_of_range("Index out of range");
+        throw out_of_range("Index out of range");
     }
     if (size == capacity) {
         resize(); // если заполнен - увеличить
@@ -47,7 +47,7 @@ void Array<T>::addAt(size_t index, T value) {
 template<typename T>
 T Array<T>::get(size_t index) const {
     if (index >= size) {
-        throw std::out_of_range("Index out of range");
+        throw out_of_range("Index out of range");
     }
     return data[index];
 }
@@ -55,7 +55,7 @@ T Array<T>::get(size_t index) const {
 template<typename T>
 void Array<T>::remove(size_t index) {
     if (index >= size) {
-        throw std::out_of_range("Index out of range");
+        throw out_of_range("Index out of range");
     }
     for (size_t i = index; i < size - 1; ++i) {
         data[i] = data[i + 1]; // Сдвигаем элементы влево
@@ -66,7 +66,7 @@ void Array<T>::remove(size_t index) {
 template<typename T>
 void Array<T>::replace(size_t index, T value) {
     if (index >= size) {
-        throw std::out_of_range("Index out of range");
+        throw out_of_range("Index out of range");
     }
     data[index] = value; // Заменяем элемент по индексу
 }
@@ -79,7 +79,7 @@ size_t Array<T>::length() const {
 template<typename T>
 void Array<T>::print() const {
     for (size_t i = 0; i < size; ++i) {
-        std::cout << data[i] << " ";
+        cout << data[i] << " ";
     }
-    std::cout << std::endl;
+    cout << endl;
 }
