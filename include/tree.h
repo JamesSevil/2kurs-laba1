@@ -2,30 +2,34 @@
 
 #include "includes.h"
 
-template<typename T>
 struct NodeT {
-    T data;
+    int data;
     NodeT* left;
     NodeT* right;
 
-    NodeT(T value);
+    NodeT(int value);
 };
-
-template<typename T>
-struct CompleteBinaryTree {
-    NodeT<T>* root;
+struct BinaryTree {
+    NodeT* root;
     int size;
 
-    CompleteBinaryTree();
-    ~CompleteBinaryTree();
+    BinaryTree();
+    ~BinaryTree();
 
-    void insert(T value); // ф-ия добавления элемента
-    bool search(NodeT<T>* node, T value); // ф-ия поиска элемента
-    bool isComplete(NodeT<T>* node, int index, int totalNodes); // проверка на complete
-    void fillArray(NodeT<T>** arr, NodeT<T>* node, int index = 0); // Заполнение массива узлов
-    string toString(NodeT<T>* node);
-    void printTree(NodeT<T>* node, int depth = 0); // функция вывода дерева на экран
-    void clear(NodeT<T>* node);// освобождение памяти
+    void insert(int value);
+    bool search(int value);
+    bool isComplete();
+    void print();
+    string toString();
+
+private:
+    NodeT* insertRec(NodeT* node, int value);
+    bool searchRec(NodeT* node, int value);
+    int countNodes(NodeT* node);
+    bool isCompleteRec(NodeT* node, int index, int numberNodes);
+    void printTreeRec(NodeT* node, int depth);
+    void destroyTree(NodeT* node);
+    string toStringRec(NodeT* node);
 };
 
 #include "../src/tree.cpp" // Включаем реализацию шаблона

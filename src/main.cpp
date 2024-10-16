@@ -639,8 +639,8 @@ void Hprocessing(string& command, string& filename) { // ф-ия обработ�
 }
 
 // Дерево
-CompleteBinaryTree<int> Treadfile(string& filename, string& name) {
-    CompleteBinaryTree<int> nums;
+BinaryTree Treadfile(string& filename, string& name) {
+    BinaryTree nums;
     string str;
     ifstream fileinput;
     fileinput.open(filename);
@@ -659,12 +659,12 @@ CompleteBinaryTree<int> Treadfile(string& filename, string& name) {
 }
 void TPUSH(string& name, int& value, string& filename) {
     string textfull = Fulltext(filename, name);
-    CompleteBinaryTree<int> nums = Treadfile(filename, name);
+    BinaryTree nums = Treadfile(filename, name);
     
     string str;
     if (nums.size != 0) {
         nums.insert(value);
-        str = name + ' ' + nums.toString(nums.root);
+        str = name + ' ' + nums.toString();
         textfull += str;
         writefile(filename, textfull);
     } else {
@@ -674,10 +674,10 @@ void TPUSH(string& name, int& value, string& filename) {
     }
 }
 void TSEARCH(string& name, int& value, string& filename) {
-    CompleteBinaryTree<int> nums = Treadfile(filename, name);
+    BinaryTree nums = Treadfile(filename, name);
 
     if (nums.size != 0) {
-        bool check = nums.search(nums.root, value);
+        bool check = nums.search(value);
         if (check) cout << "True" << endl;
         else cout << "false" << endl;
     } else {
@@ -686,22 +686,21 @@ void TSEARCH(string& name, int& value, string& filename) {
     }
 }
 void TCHECK(string& name, string& filename) {
-    CompleteBinaryTree<int> nums = Treadfile(filename, name);
+    BinaryTree nums = Treadfile(filename, name);
 
     if (nums.size != 0) {
-        bool check = nums.isComplete(nums.root, 0, nums.size);
-        if (check) cout << "True" << endl;
-        else cout << "false" << endl;
+        if (nums.isComplete()) cout << "True" << endl;
+        else if (!nums.isComplete()) cout << "False" << endl;
     } else {
         cout << "Ошибка, нет такого дерева или оно пусто!" << endl;
         exit(1);
     }
 }
 void TPRINT(string& name, string& filename) {
-    CompleteBinaryTree<int> nums = Treadfile(filename, name);
+    BinaryTree nums = Treadfile(filename, name);
 
     if (nums.size != 0) {
-        nums.printTree(nums.root);
+        nums.print();
     } else {
         cout << "Ошибка, нет такого дерева или оно пусто!" << endl;
         exit(1);
@@ -722,7 +721,7 @@ void Tprocessing(string& command, string& filename) { // ф-ия обработ�
     } else if (command.substr(0, 7) == "TCHECK ") {
         stringstream stream(command.substr(7));
         stream >> name;
-        TSEARCH(name, value, filename);
+        TCHECK(name, filename);
     } else if (command.substr(0, 7) == "TPRINT ") {
         stringstream stream(command.substr(7));
         stream >> name;

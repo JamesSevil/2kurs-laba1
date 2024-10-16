@@ -1,100 +1,104 @@
 #include "../include/tree.h"
 
-template<typename T>
-NodeT<T>::NodeT(T value) : data(value), left(nullptr), right(nullptr) {}
+NodeT::NodeT(int value) : data(value), left(nullptr), right(nullptr) {}
 
-template<typename T>
-CompleteBinaryTree<T>::CompleteBinaryTree() : root(nullptr), size(0) {}
 
-template<typename T>
-void CompleteBinaryTree<T>::insert(T value) {
-    NodeT<T>* newNode = new NodeT<T>(value);
-    if (root == nullptr) {
-        root = newNode;
-    } else {
-        // Используем массив для хранения узлов для упрощения вставки
-        NodeT<T>** nodes = new NodeT<T>*[size + 1];
-        fillArray(nodes, root);
-        nodes[size] = newNode;
+BinaryTree::BinaryTree() : root(nullptr), size(0) {}
+BinaryTree::~BinaryTree() {
+    destroyTree(root);
+}
 
-        // Вставка в полный бинарный дерево
-        for (int i = 0; i < size; ++i) {
-            if (nodes[i] != nullptr) {
-                if (nodes[i]->left == nullptr) {
-                    nodes[i]->left = newNode;
-                    break;
-                } else if (nodes[i]->right == nullptr) {
-                    nodes[i]->right = newNode;
-                    break;
-                }
-            }
-        }
-
-        delete[] nodes;
-    }
+void BinaryTree::insert(int value) {
+    root = insertRec(root, value);
     size++;
 }
 
-template<typename T>
-bool CompleteBinaryTree<T>::search(NodeT<T>* node, T value) {
+bool BinaryTree::search(int value) {
+    return searchRec(root, value);
+}
+
+bool BinaryTree::isComplete() {
+    int nodeCount = countNodes(root);
+    return isCompleteRec(root, 0, nodeCount);
+}
+
+string BinaryTree::toString() {
+    return toStringRec(root);
+}
+
+void BinaryTree::print() {
+    printTreeRec(root, 0);
+    cout << endl;
+}
+
+
+
+NodeT* BinaryTree::insertRec(NodeT* node, int value) {
+    if (node == nullptr) {
+        return new NodeT(value);
+    }
+    if (value < node->data) {
+        node->left = insertRec(node->left, value);
+    } else {
+        node->right = insertRec(node->right, value);
+    }
+    return node;
+}
+
+bool BinaryTree::searchRec(NodeT* node, int value) {
     if (node == nullptr) return false;
     if (node->data == value) return true;
-    return search(node->left, value) || search(node->right, value);
+
+    if (value < node->data) {
+        return searchRec(node->left, value);
+    } else {
+        return searchRec(node->right, value);
+    }
 }
 
-template<typename T>
-bool CompleteBinaryTree<T>::isComplete(NodeT<T>* node, int index, int totalNodes) {
+int BinaryTree::countNodes(NodeT* node) {
+    if (node == nullptr) return 0;
+    return 1 + countNodes(node->left) + countNodes(node->right);
+}
+
+bool BinaryTree::isCompleteRec(NodeT* node, int index, int numberNodes) {
     if (node == nullptr) return true;
-    if (index >= totalNodes) return false;
-    return isComplete(node->left, 2 * index + 1, totalNodes) &&
-            isComplete(node->right, 2 * index + 2, totalNodes);
+    if (index >= numberNodes) return false;
+
+    return isCompleteRec(node->left, 2 * index + 1, numberNodes) &&
+            isCompleteRec(node->right, 2 * index + 2, numberNodes);
 }
 
-template<typename T>
-void CompleteBinaryTree<T>::fillArray(NodeT<T>** arr, NodeT<T>* node, int index) {
-    if (node == nullptr) return;
-    arr[index] = node;
-    fillArray(arr, node->left, 2 * index + 1);
-    fillArray(arr, node->right, 2 * index + 2);
-}
-
-template<typename T>
-string CompleteBinaryTree<T>::toString(NodeT<T>* node) { // Функция для получения строки из элементов дерева
+string BinaryTree::toStringRec(NodeT* node) {
     if (node == nullptr) return "";
 
     ostringstream oss;
     oss << node->data << " "; // Добавляем текущий узел
 
     // Рекурсивно добавляем элементы из левого и правого поддеревьев
-    oss << toString(node->left);
-    oss << toString(node->right);
+    oss << toStringRec(node->left);
+    oss << toStringRec(node->right);
 
     return oss.str();
 }
 
-template<typename T>
-void CompleteBinaryTree<T>::printTree(NodeT<T>* node, int depth) {
+void BinaryTree::printTreeRec(NodeT* node, int depth) {
     if (node == nullptr) return;
 
     // Сначала выводим правое поддерево
-    printTree(node->right, depth + 1);
+    printTreeRec(node->right, depth + 1);
 
     // Затем выводим текущий узел
     cout << setw(4 * depth) << " " << node->data << endl;
 
     // Затем выводим левое поддерево
-    printTree(node->left, depth + 1);
+    printTreeRec(node->left, depth + 1);
 }
 
-template<typename T>
-void CompleteBinaryTree<T>::clear(NodeT<T>* node) {
-    if (node == nullptr) return;
-    clear(node->left);
-    clear(node->right);
-    delete node;
-}
-
-template<typename T>
-CompleteBinaryTree<T>::~CompleteBinaryTree() {
-    clear(root);
+void BinaryTree::destroyTree(NodeT* node) {
+    if (node != nullptr) {
+        destroyTree(node->left);   // Освобождаем левое поддерево
+        destroyTree(node->right);  // Освобождаем правое поддерево
+        delete node;               // Освобождаем текущий узел
+    }
 }
